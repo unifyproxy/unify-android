@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import 'package:unify/widgets/main/MainWidget.dart';
+import 'pages/main/mainpage.dart';
 
-void main() => runApp(MainWidget());
+void main() => runApp(MainPage());

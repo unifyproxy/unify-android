@@ -1,0 +1,6 @@
+{
+    "editor.formatOnSave": true,
+    "editor.fontFamily": "'fira code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+    "editor.fontLigatures": true,
+    "editor.mouseWheelZoom": true
+}
