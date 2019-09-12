@@ -1,8 +1,27 @@
+LOCAL_PATH := $(call my-dir)
+BUILD_SHARED_EXECUTABLE := $(LOCAL_PATH)/build-shared-executable.mk
+
+
+########################################################
+## libancillary
+########################################################
+
+include $(CLEAR_VARS)
+
+ANCILLARY_SOURCE := fd_recv.c fd_send.c
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/libancillary
+
+LOCAL_MODULE := libancillary
+
+LOCAL_SRC_FILES := $(addprefix libancillary/, $(ANCILLARY_SOURCE))
+
+include $(BUILD_STATIC_LIBRARY)
+
+
 ########################################################
 ## tun2socks
 ########################################################
-
-APP_PLATFORM := ANDROID-16
 
 include $(CLEAR_VARS)
 
@@ -11,17 +30,18 @@ LOCAL_CFLAGS += -DBADVPN_THREADWORK_USE_PTHREAD -DBADVPN_LINUX -DBADVPN_BREACTOR
 LOCAL_CFLAGS += -DBADVPN_USE_SIGNALFD -DBADVPN_USE_EPOLL
 LOCAL_CFLAGS += -DBADVPN_LITTLE_ENDIAN -DBADVPN_THREAD_SAFE
 LOCAL_CFLAGS += -DNDEBUG -DANDROID
+# LOCAL_CFLAGS += -w -v
 # LOCAL_CFLAGS += -DTUN2SOCKS_JNI
 
-# LOCAL_STATIC_LIBRARIES := libancillary
+LOCAL_STATIC_LIBRARIES := libancillary
 
 LOCAL_C_INCLUDES:= \
-#		$(LOCAL_PATH)/libancillary \
+		$(LOCAL_PATH)/libancillary \
         $(LOCAL_PATH)/badvpn/lwip/src/include/ipv4 \
         $(LOCAL_PATH)/badvpn/lwip/src/include/ipv6 \
         $(LOCAL_PATH)/badvpn/lwip/src/include \
         $(LOCAL_PATH)/badvpn/lwip/custom \
-        $(LOCAL_PATH)/badvpn/
+        $(LOCAL_PATH)/badvpn
 
 TUN2SOCKS_SOURCES := \
         base/BLog_syslog.c \
@@ -92,4 +112,4 @@ LOCAL_LDLIBS := -ldl -llog
 
 LOCAL_SRC_FILES := $(addprefix badvpn/, $(TUN2SOCKS_SOURCES))
 
-include $(BUILD_SHARED_EXECUTABLE)
+#include $(BUILD_EXECUTABLE)

@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:unify/pages/main/states/bottom_bar.dart';
 
 class BottomBar extends StatefulWidget {
+  final BottomBarState _bottomBarState;
+
+  BottomBar(this._bottomBarState);
+
   @override
-  _BottomBarState createState() => _BottomBarState();
+  _BottomBarState createState() => _BottomBarState(_bottomBarState);
 }
 
 class _BottomBarState extends State<BottomBar> {
-  int _curIndex = 0;
+  BottomBarState _bottomBarState;
+
+  _BottomBarState(this._bottomBarState);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _bottomBarState.curIndex = 0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +31,28 @@ class _BottomBarState extends State<BottomBar> {
           children: <Widget>[
             Expanded(
               child: FlatButton(
-                color: _curIndex == 0 ? Colors.blue[800] : Colors.blue[300],
+                color: _bottomBarState.curIndex == 0
+                    ? Colors.blue[800]
+                    : Colors.blue[300],
                 focusColor: Colors.blue[400],
                 child: Center(child: Text("V2ray")),
                 onPressed: () {
                   setState(() {
-                    _curIndex = 0;
+                    _bottomBarState.curIndex = 0;
                   });
                 },
               ),
             ),
             Expanded(
               child: FlatButton(
-                color: _curIndex == 1 ? Colors.red[800] : Colors.red[300],
+                color: _bottomBarState.curIndex == 1
+                    ? Colors.red[800]
+                    : Colors.red[300],
                 focusColor: Colors.red[400],
                 child: Center(child: Text("SSR")),
                 onPressed: () {
                   setState(() {
-                    _curIndex = 1;
+                    _bottomBarState.curIndex = 1;
                   });
                 },
               ),
