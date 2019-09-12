@@ -1,0 +1,9 @@
+[submodule "unify/android/app/src/main/native/badvpn"]
+	path = unify/android/app/src/main/native/badvpn
+	url = https://github.com/shadowsocks/badvpn.git
+[submodule "unify/android/app/src/main/jni/badvpn"]
+	path = unify/android/app/src/main/jni/badvpn
+	url = https://github.com/shadowsocks/badvpn.git
+[submodule "unify/android/app/src/main/jni/libancillary"]
+	path = unify/android/app/src/main/jni/libancillary
+	url = https://github.com/shadowsocks/libancillary.git
