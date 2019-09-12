@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:unify/pages/main/states/bottom_bar.dart';
+import 'package:unify/pages/main/states/bottombar_state.dart';
 
 class BottomBar extends StatefulWidget {
   final BottomBarState _bottomBarState;
-
   BottomBar(this._bottomBarState);
 
   @override
-  _BottomBarState createState() => _BottomBarState(_bottomBarState);
+  _BottomBarState createState() => _BottomBarState();
 }
 
 class _BottomBarState extends State<BottomBar> {
   BottomBarState _bottomBarState;
 
-  _BottomBarState(this._bottomBarState);
-
   @override
   void initState() {
     super.initState();
 
-    _bottomBarState.curIndex = 0;
+    _bottomBarState = widget._bottomBarState;
   }
 
   @override
@@ -31,28 +28,28 @@ class _BottomBarState extends State<BottomBar> {
           children: <Widget>[
             Expanded(
               child: FlatButton(
-                color: _bottomBarState.curIndex == 0
+                color: _bottomBarState.curType == BottomBarStateEnum.V2RAY
                     ? Colors.blue[800]
                     : Colors.blue[300],
                 focusColor: Colors.blue[400],
                 child: Center(child: Text("V2ray")),
                 onPressed: () {
                   setState(() {
-                    _bottomBarState.curIndex = 0;
+                    _bottomBarState.curType = BottomBarStateEnum.V2RAY;
                   });
                 },
               ),
             ),
             Expanded(
               child: FlatButton(
-                color: _bottomBarState.curIndex == 1
+                color: _bottomBarState.curType == BottomBarStateEnum.SSR
                     ? Colors.red[800]
                     : Colors.red[300],
                 focusColor: Colors.red[400],
                 child: Center(child: Text("SSR")),
                 onPressed: () {
                   setState(() {
-                    _bottomBarState.curIndex = 1;
+                    _bottomBarState.curType = BottomBarStateEnum.SSR;
                   });
                 },
               ),

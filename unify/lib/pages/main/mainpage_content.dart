@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:unify/pages/main/bottombar.dart';
 import 'package:unify/pages/main/proxy_listview.dart';
 import 'package:provider/provider.dart';
-import 'package:unify/pages/main/states/bottom_bar.dart';
-import 'bottombar.dart';
+import 'package:unify/pages/main/states/bottombar_state.dart';
 
 class MainPageContent extends StatefulWidget {
   @override
@@ -20,21 +20,33 @@ class _MainPageContentState extends State<MainPageContent> {
           child: Column(
             children: <Widget>[
               Expanded(
-                child: ProxyListView(),
-              ),
-              FloatingActionButton(
-                tooltip: "Connect to selected server",
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                onPressed: () => null,
-                child: Icon(
-                  Icons.play_arrow,
-                  size: 50,
-                  color: Colors.white30,
-                ),
+                child: Consumer<BottomBarState>(
+                    builder: (_, bottombarState, __) => Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Stack(
+                            alignment: Alignment.bottomCenter,
+                            children: <Widget>[
+                              ProxyListView(bottombarState),
+                              Positioned(
+                                child: FloatingActionButton(
+                                  tooltip: "Connect to selected server",
+                                  onPressed: () => null,
+                                  child: Icon(
+                                    Icons.play_arrow,
+                                    size: 50,
+                                    color: Colors.white30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
               ),
               SizedBox(
                 height: 50,
-                child: Consumer(builder: (_, bottombarState, __) => BottomAppBar(),),
+                child: Consumer<BottomBarState>(
+                  builder: (_, bottombarState, __) => BottomBar(bottombarState),
+                ),
               ),
             ],
             crossAxisAlignment: CrossAxisAlignment.stretch,

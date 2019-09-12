@@ -47,12 +47,11 @@ android {
 
         // ndk 'x86', 'x86_64', 'armeabi-v7a',
         externalNativeBuild {
-//            ndk {
-//                abiFilters  'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
-//            }
+            ndk {
+                abiFilters  'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+            }
 
             cmake {
-                abiFilters  'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
                 targets "tun2socks", "libancillary"
             }
         }

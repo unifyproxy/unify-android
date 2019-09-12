@@ -21,8 +21,6 @@ class UnifyVpnService: VpnService(){
             return
         }
 
-
-
         localTunnel = builder.addAddress(address, prefix_length).establish()
     }
 
