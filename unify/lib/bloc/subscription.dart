@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'package:unify/utils.dart' as utils;
+
 class Subscription {
   final String url;
   final String name;
@@ -15,17 +17,20 @@ class Subscription {
   Node parseNode(String source) {
     final contents = source.split('/');
     final protocol = contents.first;
-    final contentString = String.fromCharCodes(base64Decode(contents.last));
+    final contentString = utils.base64Decode(contents.last);
 
     if (protocol == 'vmess:') {
       // nodeType = NodeType.V2ray;
       return Node<V2rayInfo>(
         NodeType.V2ray,
-        V2rayInfo.fromJson(json.decode(contentString)),
+        V2rayInfo.fromJson(jsonDecode(contentString)),
       );
     } else if (protocol == 'ssr:') {
       // nodeType = NodeType.SSR;
-      // TODO: Implement it
+      return Node<SSRInfo>(
+        NodeType.SSR,
+        SSRInfo.fromRawString(contentString),
+      );
     } else {
       // nodeType = NodeType.Unsupported;
       return Node(NodeType.Unsupported, null);
@@ -36,7 +41,7 @@ class Subscription {
     final res = await http.get(url);
     if (res.statusCode == 200) {
       final List<Node> nodes = [];
-      final urls = String.fromCharCodes(base64Decode(res.body));
+      final urls = utils.base64Decode(res.body);
 
       for (var url in urls.split('\n')) {
         nodes.add(parseNode(url));
@@ -59,7 +64,68 @@ class Node<T extends NodeInfo> {
 
 abstract class NodeInfo {}
 
-class SSRInfo extends NodeInfo {}
+class SSRInfo extends NodeInfo {
+  String host;
+  String port;
+  String method;
+  String password;
+  String remark;
+  String protocol;
+  String protocolParam;
+  String obfs;
+  String obfsParam;
+
+  SSRInfo(this.host, this.port, this.method, this.password,
+      {this.remark,
+      this.protocol,
+      this.protocolParam,
+      this.obfs,
+      this.obfsParam});
+
+  SSRInfo.fromRawString(String source, {isBase64: false}) {
+    // URL Scheme: ssr://host:port:protocol:method:obfs:base64(password)/?protocolParam=base64(x)&obfsParam=base64(x)&remark=base64(x)
+    final l1 = isBase64 ? utils.base64Decode(source) : source;
+    final l2 = l1.split('/?');
+    final l3 = l2.first.split(':');
+    final l4 = l2.last.split('&');
+
+    host = l3[0];
+    port = l3[1];
+    protocol = l3[2];
+    method = l3[3];
+    obfs = l3[4];
+    password = utils.base64Decode(l3[5]);
+    protocolParam = utils.base64Decode(l4[0].split('=').last);
+    obfsParam = utils.base64Decode(l4[1].split('=').last);
+    remark = utils.base64Decode(l4[2].split('=').last);
+  }
+
+  SSRInfo.fromJson(Map<String, dynamic> json) {
+    host = json['host'];
+    port = json['port'];
+    method = json['method'];
+    password = json['password'];
+    remark = json['remark'];
+    protocol = json['protocol'];
+    protocolParam = json['protocolParam'];
+    obfs = json['obfs'];
+    obfsParam = json['obfsParam'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['host'] = this.host;
+    data['port'] = this.port;
+    data['method'] = this.method;
+    data['password'] = this.password;
+    data['remark'] = this.remark;
+    data['protocol'] = this.protocol;
+    data['protocolParam'] = this.protocolParam;
+    data['obfs'] = this.obfs;
+    data['obfsParam'] = this.obfsParam;
+    return data;
+  }
+}
 
 class V2rayInfo extends NodeInfo {
   String add;

@@ -28,10 +28,22 @@ void main() {
     assert(await bloc.testSub("https://baidu.com") == true);
   });
 
-  test("parse subs data", () async {
-    final f = Directory.current;
+  test("parse v2ray subs data", () async {
     final secret = jsonDecode(File("./secret.json").readAsStringSync());
     final sub = Subscription(secret['v2ray_sub']);
     await sub.update();
+  });
+
+  test("parse ssr url", () {
+    final content =
+        "aGVsbG8uZm9vOjA6YXV0aF9hZXMxMjhfc2hhMTpjaGFjaGEyMC1pZXRmOmh0dHBfc2ltcGxlOmVtTnpjM0l1WTI5dC8/b2Jmc3BhcmFtPU1qQTFNek00TURRM09TNXRhV055YjNOdlpuUXVZMjl0JnByb3RvcGFyYW09T0RBME56azZhWEJ0TUhOeiZyZW1hcmtzPVRGWXpMZVdQc09hNXZrZERVQzFDTFRF";
+    assert(SSRInfo.fromRawString(content, isBase64: true).host == 'hello.foo');
+  });
+
+  test("parse ssr subs data", () async {
+    final secret = jsonDecode(File("./secret.json").readAsStringSync());
+    final sub = Subscription(secret['ssr_sub']);
+
+    assert(await sub.update());
   });
 }
