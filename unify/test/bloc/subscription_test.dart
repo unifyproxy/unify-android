@@ -1,9 +1,9 @@
-import 'package:unify/bloc/subscription.dart';
-
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:unify/bloc/proxy_info.dart';
+import 'package:unify/bloc/subscription.dart';
 
 void main() {
   test("test subscription obj", () {
@@ -20,7 +20,6 @@ void main() {
     final bloc = SubscriptionBloc();
     assert(bloc.addSub(sub) == false);
     assert(bloc.addSub(sub2) == true);
-    assert(bloc.subs.length == 1);
   });
 
   test("test sub url", () async {

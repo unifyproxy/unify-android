@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:clippy_flutter/diagonal.dart';
 
-AppBar getMainAppBar(BuildContext context) {
+AppBar getMainAppBar() {
   return AppBar(
     title: Text("Unify"),
     leading: Builder(builder: (BuildContext context) {
@@ -43,5 +43,21 @@ AppBar getMainAppBar(BuildContext context) {
         clipShadows: [ClipShadow(color: Colors.black, elevation: 0)],
       );
     }),
+    actions: <Widget>[
+      PopupMenuButton(
+        icon: Icon(
+          Icons.playlist_add,
+        ),
+        itemBuilder: (_) {
+          return ["hello", "world"]
+              .map((t) => PopupMenuItem(
+                    child: Text(t),
+                    value: t,
+                  ))
+              .toList();
+        },
+        onSelected: (s) => print(s),
+      ),
+    ],
   );
 }

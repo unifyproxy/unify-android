@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:unify/bloc/proxy_list.dart';
+import 'package:unify/bloc/subscription.dart';
 import 'package:unify/global.dart';
+import 'package:unify/pages/main/states/bottombar_state.dart';
 
 import 'drawer.dart';
 import 'appbar.dart';
@@ -24,10 +28,25 @@ class MainPage extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: getMainAppBar(context),
-      drawer: getDrawer(context),
-      body: MainPageContent(),
+    return MultiProvider(
+      providers: [
+        Provider<SubscriptionBloc>(
+          builder: (_) => SubscriptionBloc(),
+          dispose: (_, bloc) => bloc.dispose(),
+        ),
+        Provider<ProxyListBloc>(
+          builder: (_) => ProxyListBloc(),
+          dispose: (_, bloc) => bloc.dispose(),
+        ),
+        ChangeNotifierProvider<BottomBarState>(
+          builder: (_) => BottomBarState(),
+        )
+      ],
+      child: Scaffold(
+        appBar: getMainAppBar(),
+        drawer: getDrawer(),
+        body: MainPageContent(),
+      ),
     );
   }
 }

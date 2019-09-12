@@ -2,5 +2,7 @@
     "editor.formatOnSave": true,
     "editor.fontFamily": "'fira code','Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
     "editor.fontLigatures": true,
-    "editor.mouseWheelZoom": true
+    "editor.mouseWheelZoom": true,
+    "editor.tabSize": 2,
+    "workbench.editor.showTabs": false
 }
