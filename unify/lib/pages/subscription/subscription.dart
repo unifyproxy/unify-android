@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:unify/bloc/subscription.dart';
@@ -24,19 +26,29 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         child: Icon(Icons.add),
         onPressed: () {
           print("fab pressed");
-          widget._subscriptionBloc.addSub(Subscription("https://foo.bar"));
+          widget._subscriptionBloc
+              .addSub(Subscription("https://foo.bar/${Random().nextInt(20)}"));
         },
       ),
       body: StreamBuilder(
-        stream: widget._subscriptionBloc.subs,
-        builder: (_, AsyncSnapshot<List<Subscription>> snap) => ListView(
-          children: snap.hasData ? snap.data.map((buildSubList)).toList() : [],
-        ),
-      ),
+          stream: widget._subscriptionBloc.subs,
+          builder: (_, AsyncSnapshot<List<Subscription>> snap) {
+            final data = snap.hasData ? snap.data : [];
+            return ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (_, index) => buildSubList(data[index]),
+            );
+          }),
     );
   }
 
   Widget buildSubList(Subscription sub) {
+    var nameController = TextEditingController();
+    var urlController = TextEditingController();
+
+    nameController.text = sub.name;
+    urlController.text = sub.url;
+
     return Padding(
       padding: const EdgeInsets.all(18.0),
       child: Column(
@@ -46,7 +58,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             child: Row(
               children: <Widget>[
                 SizedBox(width: 50, child: Text("Name: ")),
-                Text(sub.name),
+                Expanded(
+                  child: TextField(
+                    controller: nameController,
+                  ),
+                ),
+                Checkbox(
+                  value: sub.enabled,
+                  onChanged: (bool checked) {
+                    setState(() {
+                      sub.enabled = checked;
+                    });
+                  },
+                )
               ],
             ),
           ),
@@ -55,7 +79,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             child: Row(
               children: <Widget>[
                 SizedBox(width: 50, child: Text("URL: ")),
-                Text(sub.url),
+                Expanded(
+                  child: TextField(
+                    controller: urlController,
+                    onTap: () {},
+                    onSubmitted: (String string) {},
+                  ),
+                ),
               ],
             ),
           ),

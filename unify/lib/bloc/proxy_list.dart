@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'package:rxdart/rxdart.dart';
 
 import 'proxy_info.dart';
 
@@ -8,10 +8,10 @@ class ProxyList {
 }
 
 class ProxyListBloc {
-  final StreamController<List<V2rayInfo>> _v2rayList =
-      StreamController<List<V2rayInfo>>.broadcast();
-  final StreamController<List<SSRInfo>> _ssrList =
-      StreamController<List<SSRInfo>>.broadcast();
+  final BehaviorSubject<List<V2rayInfo>> _v2rayList =
+      BehaviorSubject<List<V2rayInfo>>();
+  final BehaviorSubject<List<SSRInfo>> _ssrList =
+      BehaviorSubject<List<SSRInfo>>();
 
   final ProxyList _proxyList = ProxyList();
 

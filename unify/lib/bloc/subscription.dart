@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:rxdart/rxdart.dart';
 import 'package:unify/utils.dart' as utils;
 
 import './proxy_info.dart';
@@ -9,6 +9,8 @@ import './proxy_info.dart';
 class Subscription {
   final String url;
   final String name;
+
+  var enabled = true;
 
   List<Proxy> _nodes;
 
@@ -57,8 +59,8 @@ class Subscription {
 }
 
 class SubscriptionBloc {
-  final StreamController<List<Subscription>> _subsStreamController =
-      StreamController<List<Subscription>>.broadcast();
+  final BehaviorSubject<List<Subscription>> _subsStreamController =
+      BehaviorSubject<List<Subscription>>();
 
   List<Subscription> _subs = <Subscription>[];
 
@@ -66,6 +68,10 @@ class SubscriptionBloc {
 
   dispose() {
     _subsStreamController.close();
+  }
+
+  void notifyAll() {
+    _subsStreamController.sink.add(_subs);
   }
 
   bool addSub(Subscription sub) {
@@ -79,7 +85,16 @@ class SubscriptionBloc {
         return false;
       }
       _subs.add(sub);
-      _subsStreamController.sink.add(_subs);
+      notifyAll();
+      return true;
+    }
+    return false;
+  }
+
+  bool set(int index, bool enable) {
+    if (index >= 0 && index <= this._subs.length) {
+      this._subs[index].enabled = enable;
+      notifyAll();
       return true;
     }
     return false;
@@ -87,7 +102,7 @@ class SubscriptionBloc {
 
   removeSub(Subscription sub) {
     _subs = _subs.where((s) => s.url != sub.url).toList();
-    _subsStreamController.sink.add(_subs);
+    notifyAll();
   }
 
   testSub(String url) async {
@@ -97,6 +112,6 @@ class SubscriptionBloc {
 
   updateSubs() {
     _subs.forEach((sub) async => await sub.update());
-    _subsStreamController.sink.add(_subs);
+    notifyAll();
   }
 }
