@@ -30,8 +30,8 @@ class _BottomBarState extends State<BottomBar> {
             Expanded(
               child: FlatButton(
                 color: _bottomBarState.curType == BottomBarStateEnum.V2RAY
-                    ? GlobalConstent.v2rayTheme.mainColor
-                    : GlobalConstent.v2rayTheme.secondaryColor,
+                    ? GlobalTheme.v2rayTheme.mainColor
+                    : GlobalTheme.v2rayTheme.secondaryColor,
                 focusColor: Colors.blue[400],
                 child: Center(child: Text("V2ray")),
                 onPressed: () {
@@ -44,8 +44,8 @@ class _BottomBarState extends State<BottomBar> {
             Expanded(
               child: FlatButton(
                 color: _bottomBarState.curType == BottomBarStateEnum.SSR
-                    ? GlobalConstent.ssrTheme.mainColor
-                    : GlobalConstent.ssrTheme.secondaryColor,
+                    ? GlobalTheme.ssrTheme.mainColor
+                    : GlobalTheme.ssrTheme.secondaryColor,
                 focusColor: Colors.red[400],
                 child: Center(child: Text("SSR")),
                 onPressed: () {

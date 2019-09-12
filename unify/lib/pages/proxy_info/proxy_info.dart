@@ -3,6 +3,7 @@ import 'package:unify/bloc/proxy_list.dart';
 import 'package:unify/pages/main/states/bottombar_state.dart';
 
 class ProxyInfoPage extends StatelessWidget {
+  static const ID = "ProxyInfoPage";
   final BottomBarState _bottomBarState;
   final ProxyListBloc _proxyListBloc;
 

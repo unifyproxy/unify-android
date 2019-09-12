@@ -4,5 +4,9 @@
     "editor.fontLigatures": true,
     "editor.mouseWheelZoom": true,
     "editor.tabSize": 2,
-    "workbench.editor.showTabs": false
+    "workbench.editor.showTabs": false,
+    "dart.analyzerAdditionalArgs": [
+        "--enable-completion-model"
+    ],
+    "editor.suggestSelection": "first"
 }

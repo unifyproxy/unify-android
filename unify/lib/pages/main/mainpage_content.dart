@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:unify/bloc/proxy_list.dart';
-import 'package:unify/bloc/subscription.dart';
 import 'package:unify/global.dart';
 import 'package:unify/pages/main/bottombar.dart';
 import 'package:unify/pages/main/proxy_listview.dart';
@@ -36,8 +35,8 @@ class _MainPageContentState extends State<MainPageContent> {
                                     Provider.of<BottomBarState>(context)
                                                 .curType ==
                                             BottomBarStateEnum.V2RAY
-                                        ? GlobalConstent.v2rayTheme.accentColor
-                                        : GlobalConstent.ssrTheme.accentColor,
+                                        ? GlobalTheme.v2rayTheme.accentColor
+                                        : GlobalTheme.ssrTheme.accentColor,
                                 onPressed: () {},
                                 child: Icon(
                                   Icons.play_arrow,
