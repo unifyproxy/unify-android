@@ -152,7 +152,10 @@ class MyHomePage extends StatelessWidget {
                   child: Container(
                     color: Colors.white,
                     child: ListView(
-                      children: [{"name": "Subscription", "id": SubscriptionPage.ID}, {"name": "Settings", "id": SettingPage.ID}]
+                      children: [
+                        {"name": "Subscription", "id": SubscriptionPage.ID},
+                        {"name": "Settings", "id": SettingPage.ID}
+                      ]
                           .map(
                             (i) => Padding(
                               padding:
@@ -166,6 +169,7 @@ class MyHomePage extends StatelessWidget {
                                     splashColor:
                                         GlobalTheme.unifyTheme.secondaryColor,
                                     onTap: () {
+                                      Navigator.of(context).pop();
                                       Navigator.of(context).pushNamed(i["id"]);
                                     },
                                     child: Padding(

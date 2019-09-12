@@ -57,7 +57,8 @@ class Subscription {
 }
 
 class SubscriptionBloc {
-  final StreamController _subsStreamController = StreamController();
+  final StreamController<List<Subscription>> _subsStreamController =
+      StreamController<List<Subscription>>.broadcast();
 
   List<Subscription> _subs = <Subscription>[];
 
@@ -78,6 +79,7 @@ class SubscriptionBloc {
         return false;
       }
       _subs.add(sub);
+      _subsStreamController.sink.add(_subs);
       return true;
     }
     return false;
