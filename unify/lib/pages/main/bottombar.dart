@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unify/global.dart';
 import 'package:unify/pages/main/states/bottombar_state.dart';
 
 class BottomBar extends StatefulWidget {
@@ -29,8 +30,8 @@ class _BottomBarState extends State<BottomBar> {
             Expanded(
               child: FlatButton(
                 color: _bottomBarState.curType == BottomBarStateEnum.V2RAY
-                    ? Colors.blue[800]
-                    : Colors.blue[300],
+                    ? GlobalConstent.v2rayTheme.mainColor
+                    : GlobalConstent.v2rayTheme.secondaryColor,
                 focusColor: Colors.blue[400],
                 child: Center(child: Text("V2ray")),
                 onPressed: () {
@@ -43,8 +44,8 @@ class _BottomBarState extends State<BottomBar> {
             Expanded(
               child: FlatButton(
                 color: _bottomBarState.curType == BottomBarStateEnum.SSR
-                    ? Colors.red[800]
-                    : Colors.red[300],
+                    ? GlobalConstent.ssrTheme.mainColor
+                    : GlobalConstent.ssrTheme.secondaryColor,
                 focusColor: Colors.red[400],
                 child: Center(child: Text("SSR")),
                 onPressed: () {

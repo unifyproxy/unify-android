@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unify/global.dart';
 
 import 'drawer.dart';
 import 'appbar.dart';
@@ -12,8 +13,8 @@ class MainPage extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        primaryColor: Colors.blue[600],
-        accentColor: Colors.teal[300],
+        primaryColor: GlobalConstent.unifyTheme.mainColor,
+        accentColor: GlobalConstent.unifyTheme.accentColor,
       ),
       home: MyHomePage(),
     );

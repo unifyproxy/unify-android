@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:unify/global.dart';
 import 'package:unify/pages/main/bottombar.dart';
 import 'package:unify/pages/main/proxy_listview.dart';
 import 'package:provider/provider.dart';
@@ -21,8 +22,8 @@ class _MainPageContentState extends State<MainPageContent> {
             children: <Widget>[
               Expanded(
                 child: Consumer<BottomBarState>(
-                    builder: (_, bottombarState, __) => Padding(
-                          padding: const EdgeInsets.all(8.0),
+                    builder: (context, bottombarState, __) => Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 0),
                           child: Stack(
                             alignment: Alignment.bottomCenter,
                             children: <Widget>[
@@ -30,11 +31,18 @@ class _MainPageContentState extends State<MainPageContent> {
                               Positioned(
                                 child: FloatingActionButton(
                                   tooltip: "Connect to selected server",
-                                  onPressed: () => null,
+                                  backgroundColor:
+                                      Provider.of<BottomBarState>(context)
+                                                  .curType ==
+                                              BottomBarStateEnum.V2RAY
+                                          ? GlobalConstent
+                                              .v2rayTheme.accentColor
+                                          : GlobalConstent.ssrTheme.accentColor,
+                                  onPressed: () {},
                                   child: Icon(
                                     Icons.play_arrow,
                                     size: 50,
-                                    color: Colors.white30,
+                                    color: Colors.white60,
                                   ),
                                 ),
                               ),

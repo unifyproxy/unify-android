@@ -46,6 +46,7 @@ class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
       itemBuilder: (context, index) {
         return ListTile(
           title: Text("v2ray $index"),
+          onTap: () {},
         );
       },
     );
@@ -65,6 +66,7 @@ class _SSRProxyListViewState extends State<SSRProxyListView> {
       itemBuilder: (context, index) {
         return ListTile(
           title: Text("ssr $index"),
+          onTap: () {},
         );
       },
     );
