@@ -16,39 +16,102 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
+  List<TextEditingController> _nameControllers = List();
+  List<TextEditingController> _urlControllers = List();
+  List<bool> _enable = List();
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget._subscriptionBloc.subs.listen((subs) {
+      _nameControllers = List(subs.length);
+      _urlControllers = List(subs.length);
+      _enable = List(subs.length);
+      for (var i = 0; i < subs.length; i++) {
+        _nameControllers[i].text = subs[i].name;
+        _nameControllers[i].text = subs[i].name;
+        _enable[i] = subs[i].enabled;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(APP_NAME),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          print("fab pressed");
-          widget._subscriptionBloc
-              .addSub(Subscription("https://foo.bar/${Random().nextInt(20)}"));
-        },
-      ),
-      body: StreamBuilder(
-          stream: widget._subscriptionBloc.subs,
-          builder: (_, AsyncSnapshot<List<Subscription>> snap) {
-            final data = snap.hasData ? snap.data : [];
-            return ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (_, index) => buildSubList(data[index]),
+      floatingActionButton: Builder(
+        builder: (context) => FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            print("fab pressed");
+            // widget._subscriptionBloc
+            //     .addSub(Subscription("https://foo.bar/${Random().nextInt(20)}"));
+
+            // TODO: need add a temporary item
+            showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: Text("New Subscription"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                            width: 50,
+                            child: Text(
+                              "Name: ",
+                            )),
+                        Expanded(child: TextField()),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        SizedBox(width: 50, child: Text("Url: ")),
+                        Expanded(child: TextField()),
+                      ],
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Clear"),
+                    onPressed: () {},
+                  ),
+                  FlatButton(
+                    child: Text("Add"),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
             );
-          }),
+          },
+        ),
+      ),
+      body: Builder(
+        builder: (context) => ListView.builder(
+          itemCount: _urlControllers.length,
+          itemBuilder: (_, index) => buildSubList(
+              _nameControllers[index], _urlControllers[index], _enable[index]),
+        ),
+      ),
     );
   }
 
-  Widget buildSubList(Subscription sub) {
-    var nameController = TextEditingController();
-    var urlController = TextEditingController();
+  submit(Subscription sub) {
+    if (sub != null) {
+      return widget._subscriptionBloc.addSub(sub);
+    }
+    return false;
+  }
 
-    nameController.text = sub.name;
-    urlController.text = sub.url;
-
+  Widget buildSubList(TextEditingController nameController,
+      TextEditingController urlController, bool enable) {
     return Padding(
       padding: const EdgeInsets.all(18.0),
       child: Column(
@@ -64,10 +127,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   ),
                 ),
                 Checkbox(
-                  value: sub.enabled,
+                  value: enable,
                   onChanged: (bool checked) {
                     setState(() {
-                      sub.enabled = checked;
+                      enable = checked;
                     });
                   },
                 )
@@ -82,9 +145,21 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 Expanded(
                   child: TextField(
                     controller: urlController,
-                    onTap: () {},
-                    onSubmitted: (String string) {},
                   ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.save),
+                  onPressed: () {
+                    if (submit(Subscription(
+                      urlController.text,
+                      name: nameController.text,
+                    ))) {
+                      // reset();
+                      return;
+                    }
+                    Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text("invalid sub url")));
+                  },
                 ),
               ],
             ),

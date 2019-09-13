@@ -8,5 +8,6 @@
     "dart.analyzerAdditionalArgs": [
         "--enable-completion-model"
     ],
-    "editor.suggestSelection": "first"
+    "editor.suggestSelection": "first",
+    "dart.flutterAndroidX": true
 }
