@@ -16,7 +16,7 @@ class Subscription {
 
   List<Proxy> get node => _nodes;
 
-  Subscription(this.url, {this.name: "untitled"});
+  Subscription(this.url, {this.name = "untitled"});
 
   Proxy parseNode(String source) {
     final contents = source.split('/');

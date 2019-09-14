@@ -5,6 +5,8 @@ import 'package:flutter/rendering.dart';
 import 'package:unify/bloc/subscription.dart';
 import 'package:unify/global.dart';
 
+import 'new_sub.dart';
+
 class SubscriptionPage extends StatefulWidget {
   static const ID = "SubscriptionPage";
   final SubscriptionBloc _subscriptionBloc;
@@ -25,14 +27,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     super.initState();
 
     widget._subscriptionBloc.subs.listen((subs) {
-      _nameControllers = List(subs.length);
-      _urlControllers = List(subs.length);
-      _enable = List(subs.length);
-      for (var i = 0; i < subs.length; i++) {
-        _nameControllers[i].text = subs[i].name;
-        _nameControllers[i].text = subs[i].name;
-        _enable[i] = subs[i].enabled;
-      }
+      setState(() {
+        _nameControllers = List(subs.length);
+        _urlControllers = List(subs.length);
+        _enable = List(subs.length);
+        for (var i = 0; i < subs.length; i++) {
+          _nameControllers[i] = TextEditingController();
+          _nameControllers[i].text = subs[i].name;
+          _urlControllers[i] = TextEditingController();
+          _urlControllers[i].text = subs[i].url;
+          _enable[i] = subs[i].enabled;
+        }
+      });
     });
   }
 
@@ -53,42 +59,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             // TODO: need add a temporary item
             showDialog(
               context: context,
-              builder: (_) => AlertDialog(
-                title: Text("New Subscription"),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                            width: 50,
-                            child: Text(
-                              "Name: ",
-                            )),
-                        Expanded(child: TextField()),
-                      ],
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        SizedBox(width: 50, child: Text("Url: ")),
-                        Expanded(child: TextField()),
-                      ],
-                    ),
-                  ],
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Clear"),
-                    onPressed: () {},
-                  ),
-                  FlatButton(
-                    child: Text("Add"),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
+              builder: (_) => NewSubForm(widget._subscriptionBloc),
             );
           },
         ),
@@ -104,6 +75,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   }
 
   submit(Subscription sub) {
+    var a;
+    var a;
     if (sub != null) {
       return widget._subscriptionBloc.addSub(sub);
     }
@@ -112,59 +85,66 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   Widget buildSubList(TextEditingController nameController,
       TextEditingController urlController, bool enable) {
-    return Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
-                SizedBox(width: 50, child: Text("Name: ")),
-                Expanded(
-                  child: TextField(
-                    controller: nameController,
+    return Dismissible(
+      key: UniqueKey(),
+      onDismissed: (DismissDirection dismissDirection) {
+        widget._subscriptionBloc.removeSub(
+            Subscription(urlController.text, name: nameController.text));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  SizedBox(width: 50, child: Text("Name: ")),
+                  Expanded(
+                    child: TextField(
+                      controller: nameController,
+                    ),
                   ),
-                ),
-                Checkbox(
-                  value: enable,
-                  onChanged: (bool checked) {
-                    setState(() {
-                      enable = checked;
-                    });
-                  },
-                )
-              ],
+                  Checkbox(
+                    value: enable,
+                    onChanged: (bool checked) {
+                      setState(() {
+                        enable = checked;
+                      });
+                    },
+                  )
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
-                SizedBox(width: 50, child: Text("URL: ")),
-                Expanded(
-                  child: TextField(
-                    controller: urlController,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  SizedBox(width: 50, child: Text("URL: ")),
+                  Expanded(
+                    child: TextField(
+                      controller: urlController,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.save),
-                  onPressed: () {
-                    if (submit(Subscription(
-                      urlController.text,
-                      name: nameController.text,
-                    ))) {
-                      // reset();
-                      return;
-                    }
-                    Scaffold.of(context).showSnackBar(
-                        SnackBar(content: Text("invalid sub url")));
-                  },
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(Icons.save),
+                    onPressed: () {
+                      if (submit(Subscription(
+                        urlController.text,
+                        name: nameController.text,
+                      ))) {
+                        // reset();
+                        return;
+                      }
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text("invalid sub url")));
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
