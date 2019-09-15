@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unify/bloc/proxy_list.dart';
+import 'package:unify/global.dart';
 import 'package:unify/pages/main/states/bottombar_state.dart';
 
 class ProxyInfoPage extends StatelessWidget {
@@ -12,6 +13,9 @@ class ProxyInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(APP_NAME),
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[Text(_bottomBarState.toString())],

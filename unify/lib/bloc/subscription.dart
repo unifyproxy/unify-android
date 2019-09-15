@@ -14,7 +14,7 @@ class Subscription {
 
   List<Proxy> _nodes;
 
-  List<Proxy> get node => _nodes;
+  List<Proxy> get nodes => _nodes;
 
   Subscription(this.url, {this.name = "untitled"});
 
@@ -110,8 +110,10 @@ class SubscriptionBloc {
     return res.statusCode == 200;
   }
 
-  updateSubs() {
-    _subs.forEach((sub) async => await sub.update());
+  updateSubs() async {
+    for (var sub in _subs) {
+      await sub.update();
+    }
     notifyAll();
   }
 }

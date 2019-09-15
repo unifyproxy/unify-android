@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:unify/bloc/subscription.dart';
@@ -27,6 +25,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     super.initState();
 
     widget._subscriptionBloc.subs.listen((subs) {
+      if (!mounted) return;
       setState(() {
         _nameControllers = List(subs.length);
         _urlControllers = List(subs.length);
@@ -52,10 +51,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         builder: (context) => FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            print("fab pressed");
-            // widget._subscriptionBloc
-            //     .addSub(Subscription("https://foo.bar/${Random().nextInt(20)}"));
-
             // TODO: need add a temporary item
             showDialog(
               context: context,
@@ -75,8 +70,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   }
 
   submit(Subscription sub) {
-    var a;
-    var a;
     if (sub != null) {
       return widget._subscriptionBloc.addSub(sub);
     }
