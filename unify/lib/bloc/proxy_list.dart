@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:unify/utils.dart';
 
@@ -8,37 +9,38 @@ class ProxyList {
   final _ssrList = <Proxy>[];
 }
 
-class ProxyListBloc {
-  final BehaviorSubject<List<Proxy>> _v2rayList = BehaviorSubject();
-  final BehaviorSubject<List<Proxy>> _ssrList = BehaviorSubject();
-
+class ProxyListBloc with ChangeNotifier {
   final ProxyList _proxyList = ProxyList();
-
-  Stream<List<Proxy>> get v2rayListStream => _v2rayList.stream;
-  Stream<List<Proxy>> get ssrListStream => _ssrList.stream;
 
   ProxyListBloc() {
     // TODO: implement it
   }
 
-  notifySSR() {
-    _ssrList.add(_proxyList._ssrList);
-  }
-
-  notifyV2ray() {
-    _v2rayList.add(_proxyList._v2rayList);
+  List<Proxy> getProxyListByType(ProxyType type) {
+    switch (type) {
+      case ProxyType.V2ray:
+        return _proxyList._v2rayList;
+        break;
+      case ProxyType.SSR:
+        return _proxyList._ssrList;
+        break;
+      case ProxyType.Unsupported:
+        return List();
+        break;
+    }
+    return List();
   }
 
   addSSRServer(SSRInfo ssrInfo, {sub = "None"}) {
     if (_proxyList._ssrList.any((it) => isSSRIdentical(it.node, ssrInfo)))
       return;
     _proxyList._ssrList.add(Proxy(ProxyType.SSR, ssrInfo, sub: sub));
-    notifySSR();
+    notifyListeners();
   }
 
   removeSSRServer(SSRInfo ssrInfo) {
     _proxyList._ssrList.removeWhere((it) => isSSRIdentical(it.node, ssrInfo));
-    notifySSR();
+    notifyListeners();
   }
 
   addV2rayServer(V2rayInfo v2rayInfo, {sub = "None"}) {
@@ -47,65 +49,60 @@ class ProxyListBloc {
       return;
     }
     _proxyList._v2rayList.add(Proxy(ProxyType.V2ray, v2rayInfo, sub: sub));
-    notifyV2ray();
+    notifyListeners();
   }
 
   removeV2rayServer(V2rayInfo v2rayInfo) {
     _proxyList._v2rayList
         .removeWhere((it) => isV2rayIdentical(it.node, v2rayInfo));
-    notifyV2ray();
+    notifyListeners();
   }
 
   selectV2ray(int index) {
     if (index >= 0 && index < _proxyList._v2rayList.length) {
       _proxyList._v2rayList[index].selected = true;
-      notifyV2ray();
+      notifyListeners();
     }
   }
 
   selectAllV2ray() {
     _proxyList._v2rayList.forEach((i) => i.selected = true);
-    notifyV2ray();
+    notifyListeners();
   }
 
   selectSSR(int index) {
     if (index >= 0 && index < _proxyList._v2rayList.length) {
       _proxyList._v2rayList[index].selected = true;
-      notifySSR();
+      notifyListeners();
     }
   }
 
   selectAllSSR() {
     _proxyList._ssrList.forEach((i) => i.selected = true);
-    notifySSR();
+    notifyListeners();
   }
 
   unselectV2ray(int index) {
     if (index >= 0 && index < _proxyList._v2rayList.length) {
       _proxyList._v2rayList[index].selected = false;
-      notifyV2ray();
+      notifyListeners();
     }
   }
 
   unselectAllV2ray() {
     _proxyList._v2rayList.forEach((i) => i.selected = false);
-    notifyV2ray();
+    notifyListeners();
   }
 
   unselectSSR(int index) {
     if (index >= 0 && index < _proxyList._v2rayList.length) {
       _proxyList._v2rayList[index].selected = false;
-      notifySSR();
+      notifyListeners();
     }
   }
 
   unselectAllSSR() {
     _proxyList._ssrList.forEach((i) => i.selected = false);
-    notifySSR();
-  }
-
-  dispose() {
-    _v2rayList.close();
-    _ssrList.close();
+    notifyListeners();
   }
 }

@@ -19,13 +19,11 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<SubscriptionBloc>(
+        ChangeNotifierProvider<SubscriptionBloc>(
           builder: (_) => SubscriptionBloc(),
-          dispose: (_, bloc) => bloc.dispose(),
         ),
-        Provider<ProxyListBloc>(
+        ChangeNotifierProvider<ProxyListBloc>(
           builder: (_) => ProxyListBloc(),
-          dispose: (_, bloc) => bloc.dispose(),
         ),
         ChangeNotifierProvider<BottomBarState>(
           builder: (_) => BottomBarState(),
@@ -45,8 +43,7 @@ class MainPage extends StatelessWidget {
           routes: {
             ProxyInfoPage.ID: (_) =>
                 ProxyInfoPage(bottomBarState, proxyListBloc),
-            SubscriptionPage.ID: (_) =>
-                SubscriptionPage(subscriptionBloc, proxyListBloc)
+            SubscriptionPage.ID: (_) => SubscriptionPage(),
           },
         ),
       ),

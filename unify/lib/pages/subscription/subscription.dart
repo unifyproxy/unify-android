@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:unify/bloc/proxy_info.dart';
 import 'package:unify/bloc/subscription.dart';
 import 'package:unify/bloc/proxy_list.dart';
@@ -9,10 +10,6 @@ import 'new_sub.dart';
 
 class SubscriptionPage extends StatefulWidget {
   static const ID = "SubscriptionPage";
-  final SubscriptionBloc _subscriptionBloc;
-  final ProxyListBloc _proxyListBloc;
-
-  SubscriptionPage(this._subscriptionBloc, this._proxyListBloc);
 
   @override
   _SubscriptionPageState createState() => _SubscriptionPageState();
@@ -24,85 +21,96 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   List<bool> _enable = List();
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    widget._subscriptionBloc.subs.listen((subs) {
-      if (!mounted) return;
-      setState(() {
-        _nameControllers = List(subs.length);
-        _urlControllers = List(subs.length);
-        _enable = List(subs.length);
-        for (var i = 0; i < subs.length; i++) {
-          final sub = subs[i];
+    final subs = Provider.of<SubscriptionBloc>(context).subs;
 
-          _nameControllers[i] = TextEditingController();
-          _nameControllers[i].text = sub.name;
-          _urlControllers[i] = TextEditingController();
-          _urlControllers[i].text = sub.url;
-          _enable[i] = sub.enabled;
+    if (!mounted) return;
+    setState(() {
+      _nameControllers = List(subs.length);
+      _urlControllers = List(subs.length);
+      _enable = List(subs.length);
+      for (var i = 0; i < subs.length; i++) {
+        final sub = subs[i];
 
-          // TODO add proxy to Proxy_list;
-          if (sub.enabled) {
-            for (var node in sub.nodes) {
-              if (node.type == ProxyType.V2ray) {
-                widget._proxyListBloc.addV2rayServer(node.node, sub: node.sub);
-              } else if (node.type == ProxyType.SSR) {
-                widget._proxyListBloc.addSSRServer(node.node, sub: node.sub);
-              }
-            }
-          }
-        }
-      });
+        _nameControllers[i] = TextEditingController();
+        _nameControllers[i].text = sub.name;
+        _urlControllers[i] = TextEditingController();
+        _urlControllers[i].text = sub.url;
+        _enable[i] = sub.enabled;
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(APP_NAME),
-      ),
-      floatingActionButton: Builder(
-        builder: (context) => FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            // TODO: need add a temporary item
-            showDialog(
-              context: context,
-              builder: (_) => NewSubForm(widget._subscriptionBloc),
-            );
-          },
+    return Consumer<SubscriptionBloc>(builder: (context, subscriptionBloc, _) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(APP_NAME),
         ),
-      ),
-      body: Builder(
-        builder: (context) => RefreshIndicator(
-          onRefresh: () async {
-            return widget._subscriptionBloc.updateSubs();
-          },
-          child: ListView.builder(
-            itemCount: _urlControllers.length,
-            itemBuilder: (_, index) => buildSubList(_nameControllers[index],
-                _urlControllers[index], _enable[index]),
+        floatingActionButton: Builder(
+          builder: (context) => FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => NewSubForm(subscriptionBloc),
+              );
+            },
           ),
         ),
-      ),
-    );
+        body: Builder(
+          builder: (context) => RefreshIndicator(
+            onRefresh: () async {
+              await subscriptionBloc.updateSubs();
+              return Future(() {
+                final subs = Provider.of<SubscriptionBloc>(context).subs;
+                final pList = Provider.of<ProxyListBloc>(context);
+                subs.forEach((sub) {
+                  // TODO add proxy to Proxy_list;
+                  if (sub.enabled) {
+                    for (var node in sub.nodes) {
+                      if (node.type == ProxyType.V2ray) {
+                        pList.addV2rayServer(node.node, sub: node.sub);
+                      } else if (node.type == ProxyType.SSR) {
+                        pList.addSSRServer(node.node, sub: node.sub);
+                      }
+                    }
+                  }
+                });
+              });
+            },
+            child: ListView.builder(
+              itemCount: subscriptionBloc.subs.length,
+              itemBuilder: (_, index) => buildSubList(
+                _nameControllers[index],
+                _urlControllers[index],
+                _enable[index],
+                subscriptionBloc,
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
-  submit(Subscription sub) {
-    if (sub != null) {
-      return widget._subscriptionBloc.addSub(sub);
-    }
-    return false;
+  bool submit(SubscriptionBloc subscriptionBloc, Subscription sub) {
+    subscriptionBloc.addSub(sub);
   }
 
-  Widget buildSubList(TextEditingController nameController,
-      TextEditingController urlController, bool enable) {
+  Widget buildSubList(
+    TextEditingController nameController,
+    TextEditingController urlController,
+    bool enable,
+    SubscriptionBloc subscriptionBloc,
+  ) {
     return Dismissible(
       key: UniqueKey(),
       onDismissed: (DismissDirection dismissDirection) {
-        widget._subscriptionBloc.removeSub(
+        subscriptionBloc.removeSub(
             Subscription(urlController.text, name: nameController.text));
       },
       child: Padding(
@@ -142,11 +150,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   ),
                   IconButton(
                     icon: Icon(Icons.save),
-                    onPressed: () {
-                      if (submit(Subscription(
-                        urlController.text,
-                        name: nameController.text,
-                      ))) {
+                    onPressed: () async {
+                      if (await subscriptionBloc.addSub(
+                        Subscription(
+                          urlController.text,
+                          name: nameController.text,
+                        ),
+                      )) {
                         // reset();
                         return;
                       }

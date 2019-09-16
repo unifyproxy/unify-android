@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:rxdart/rxdart.dart';
 import 'package:unify/utils.dart' as utils;
 
 import './proxy_info.dart';
@@ -60,21 +60,9 @@ class Subscription {
   }
 }
 
-class SubscriptionBloc {
-  final BehaviorSubject<List<Subscription>> _subsStreamController =
-      BehaviorSubject<List<Subscription>>();
-
+class SubscriptionBloc with ChangeNotifier {
   List<Subscription> _subs = <Subscription>[];
-
-  Stream<List<Subscription>> get subs => _subsStreamController.stream;
-
-  dispose() {
-    _subsStreamController.close();
-  }
-
-  void notifyAll() {
-    _subsStreamController.sink.add(_subs);
-  }
+  List<Subscription> get subs => _subs;
 
   Future<bool> addSub(Subscription sub) async {
     if (!_subs.any((s) => s.url == sub.url)) {
@@ -89,10 +77,9 @@ class SubscriptionBloc {
       _subs.add(sub);
 
       // update automatically
-      await sub.update();
-
-      notifyAll();
-      return true;
+      final ret = await sub.update();
+      if (ret) notifyListeners();
+      return ret;
     }
     return false;
   }
@@ -100,7 +87,7 @@ class SubscriptionBloc {
   bool set(int index, bool enable) {
     if (index >= 0 && index <= this._subs.length) {
       this._subs[index].enabled = enable;
-      notifyAll();
+      notifyListeners();
       return true;
     }
     return false;
@@ -108,7 +95,7 @@ class SubscriptionBloc {
 
   removeSub(Subscription sub) {
     _subs = _subs.where((s) => s.url != sub.url).toList();
-    notifyAll();
+    notifyListeners();
   }
 
   testSub(String url) async {
@@ -120,6 +107,6 @@ class SubscriptionBloc {
     for (var sub in _subs) {
       await sub.update();
     }
-    notifyAll();
+    notifyListeners();
   }
 }

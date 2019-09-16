@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:unify/bloc/proxy_info.dart';
 import 'package:unify/bloc/proxy_list.dart';
 import 'package:unify/pages/main/states/bottombar_state.dart';
@@ -19,7 +20,7 @@ class _ProxyListViewState extends State<ProxyListView> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       child: widget._bottomBarState.curType == BottomBarStateEnum.V2RAY
-          ? V2RAYProxyListView(widget._bottomBarState, widget._proxyListBloc)
+          ? V2RAYProxyListView()
           : SSRProxyListView(widget._bottomBarState, widget._proxyListBloc),
       onRefresh: () async {},
     );
@@ -27,59 +28,44 @@ class _ProxyListViewState extends State<ProxyListView> {
 }
 
 class V2RAYProxyListView extends StatefulWidget {
-  final ProxyListBloc _proxyListBloc;
-  final BottomBarState _bottomBarState;
-
-  V2RAYProxyListView(this._bottomBarState, this._proxyListBloc);
-
   @override
   V2RAYProxyListViewState createState() => V2RAYProxyListViewState();
 }
 
 class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
-  List<Proxy> _list;
-
-  @override
-  void initState() {
-    super.initState();
-    if (!mounted) return;
-    widget._proxyListBloc.v2rayListStream.listen((list) {
-      setState(() {
-        _list = list;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        if (_list == null || index >= _list.length) return null;
-        final item = _list[index];
-        final V2rayInfo node = item.node;
+    return Consumer<ProxyListBloc>(
+      builder: (context, proxyListBloc, _) => ListView.builder(
+        itemBuilder: (context, index) {
+          final list = proxyListBloc.getProxyListByType(ProxyType.V2ray);
+          if (list == null || index >= list.length) return null;
+          final item = list[index];
+          final V2rayInfo node = item.node;
 
-        return ListTile(
-          title: Text(node.ps),
-          subtitle: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text("Sub: ${item.sub}"),
-              Text("Addr: ${node.add}:${node.port}"),
-            ],
-          ),
-          selected: item.selected,
-          onTap: () {
+          return ListTile(
+            title: Text(node.ps),
+            subtitle: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text("Sub: ${item.sub}"),
+                Text("Addr: ${node.add}:${node.port}"),
+              ],
+            ),
+            selected: item.selected,
+            onTap: () {
 //            Navigator.of(context).push(
 //              MaterialPageRoute(
 //                builder: (_) => ProxyInfoPage(widget._bottomBarState, null),
 //              ),
 //            );
-            widget._proxyListBloc.unselectAllV2ray();
-            widget._proxyListBloc.selectV2ray(index);
-          },
-        );
-      },
+              proxyListBloc.unselectAllV2ray();
+              proxyListBloc.selectV2ray(index);
+            },
+          );
+        },
+      ),
     );
   }
 }
