@@ -16,7 +16,7 @@ class Subscription {
 
   List<Proxy> get nodes => _nodes;
 
-  Subscription(this.url, {this.name = "untitled"});
+  Subscription(this.url, {this.name = "Untitled"});
 
   Proxy parseNode(String source) {
     final contents = source.split('/');
@@ -28,12 +28,14 @@ class Subscription {
       return Proxy<V2rayInfo>(
         ProxyType.V2ray,
         V2rayInfo.fromJson(jsonDecode(contentString)),
+        sub: name,
       );
     } else if (protocol == 'ssr:') {
       // nodeType = NodeType.SSR;
       return Proxy<SSRInfo>(
         ProxyType.SSR,
         SSRInfo.fromRawString(contentString),
+        sub: name,
       );
     } else {
       // nodeType = NodeType.Unsupported;
@@ -74,7 +76,7 @@ class SubscriptionBloc {
     _subsStreamController.sink.add(_subs);
   }
 
-  bool addSub(Subscription sub) {
+  Future<bool> addSub(Subscription sub) async {
     if (!_subs.any((s) => s.url == sub.url)) {
       RegExp reg = RegExp(
           "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)",
@@ -85,6 +87,10 @@ class SubscriptionBloc {
         return false;
       }
       _subs.add(sub);
+
+      // update automatically
+      await sub.update();
+
       notifyAll();
       return true;
     }

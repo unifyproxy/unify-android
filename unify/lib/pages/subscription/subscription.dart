@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:unify/bloc/proxy_info.dart';
 import 'package:unify/bloc/subscription.dart';
+import 'package:unify/bloc/proxy_list.dart';
 import 'package:unify/global.dart';
 
 import 'new_sub.dart';
@@ -8,8 +10,9 @@ import 'new_sub.dart';
 class SubscriptionPage extends StatefulWidget {
   static const ID = "SubscriptionPage";
   final SubscriptionBloc _subscriptionBloc;
+  final ProxyListBloc _proxyListBloc;
 
-  SubscriptionPage(this._subscriptionBloc);
+  SubscriptionPage(this._subscriptionBloc, this._proxyListBloc);
 
   @override
   _SubscriptionPageState createState() => _SubscriptionPageState();
@@ -31,11 +34,24 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         _urlControllers = List(subs.length);
         _enable = List(subs.length);
         for (var i = 0; i < subs.length; i++) {
+          final sub = subs[i];
+
           _nameControllers[i] = TextEditingController();
-          _nameControllers[i].text = subs[i].name;
+          _nameControllers[i].text = sub.name;
           _urlControllers[i] = TextEditingController();
-          _urlControllers[i].text = subs[i].url;
-          _enable[i] = subs[i].enabled;
+          _urlControllers[i].text = sub.url;
+          _enable[i] = sub.enabled;
+
+          // TODO add proxy to Proxy_list;
+          if (sub.enabled) {
+            for (var node in sub.nodes) {
+              if (node.type == ProxyType.V2ray) {
+                widget._proxyListBloc.addV2rayServer(node.node, sub: node.sub);
+              } else if (node.type == ProxyType.SSR) {
+                widget._proxyListBloc.addSSRServer(node.node, sub: node.sub);
+              }
+            }
+          }
         }
       });
     });
@@ -60,10 +76,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         ),
       ),
       body: Builder(
-        builder: (context) => ListView.builder(
-          itemCount: _urlControllers.length,
-          itemBuilder: (_, index) => buildSubList(
-              _nameControllers[index], _urlControllers[index], _enable[index]),
+        builder: (context) => RefreshIndicator(
+          onRefresh: () async {
+            return widget._subscriptionBloc.updateSubs();
+          },
+          child: ListView.builder(
+            itemCount: _urlControllers.length,
+            itemBuilder: (_, index) => buildSubList(_nameControllers[index],
+                _urlControllers[index], _enable[index]),
+          ),
         ),
       ),
     );

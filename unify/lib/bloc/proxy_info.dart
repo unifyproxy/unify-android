@@ -4,8 +4,12 @@ enum ProxyType { V2ray, SSR, Unsupported }
 
 class Proxy<T extends ProxyInfo> {
   final ProxyType type;
+  final String sub;
   final T node;
-  Proxy(this.type, this.node);
+
+  bool selected = false;
+
+  Proxy(this.type, this.node, {this.sub = "None"});
 }
 
 abstract class ProxyInfo {}
@@ -21,14 +25,19 @@ class SSRInfo extends ProxyInfo {
   String obfs;
   String obfsParam;
 
-  SSRInfo(this.host, this.port, this.method, this.password,
-      {this.remark,
-      this.protocol,
-      this.protocolParam,
-      this.obfs,
-      this.obfsParam});
+  SSRInfo(
+    this.host,
+    this.port,
+    this.method,
+    this.password, {
+    this.remark,
+    this.protocol,
+    this.protocolParam,
+    this.obfs,
+    this.obfsParam,
+  });
 
-  SSRInfo.fromRawString(String source, {isBase64: false}) {
+  SSRInfo.fromRawString(String source, {isBase64 = false}) {
     // URL Scheme: ssr://host:port:protocol:method:obfs:base64(password)/?protocolParam=base64(x)&obfsParam=base64(x)&remark=base64(x)
     final l1 = isBase64 ? utils.base64Decode(source) : source;
     final l2 = l1.split('/?');
@@ -86,18 +95,19 @@ class V2rayInfo extends ProxyInfo {
   String type;
   String v;
 
-  V2rayInfo(
-      {this.add,
-      this.aid,
-      this.host,
-      this.id,
-      this.net,
-      this.path,
-      this.port,
-      this.ps,
-      this.tls,
-      this.type,
-      this.v});
+  V2rayInfo({
+    this.add,
+    this.aid,
+    this.host,
+    this.id,
+    this.net,
+    this.path,
+    this.port,
+    this.ps,
+    this.tls,
+    this.type,
+    this.v,
+  });
 
   V2rayInfo.fromJson(Map<String, dynamic> json) {
     add = json['add'];

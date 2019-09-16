@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:unify/bloc/proxy_list.dart';
-import 'package:unify/bloc/subscription.dart';
 import 'package:unify/global.dart';
 import 'package:unify/pages/main/bottombar.dart';
 import 'package:unify/pages/main/proxy_listview.dart';
@@ -21,16 +20,14 @@ class _MainPageContentState extends State<MainPageContent> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Consumer3<BottomBarState, ProxyListBloc, SubscriptionBloc>(
-                  builder: (context, bottombarState, proxyListBloc,
-                          subscriptionBloc, __) =>
+              child: Consumer2<BottomBarState, ProxyListBloc>(
+                  builder: (context, bottombarState, proxyListBloc, __) =>
                       Padding(
                         padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 0),
                         child: Stack(
                           alignment: Alignment.bottomCenter,
                           children: <Widget>[
-                            ProxyListView(bottombarState, proxyListBloc,
-                                subscriptionBloc),
+                            ProxyListView(bottombarState, proxyListBloc),
                             Positioned(
                               child: FloatingActionButton(
                                 tooltip: "Connect to selected server",

@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:unify/bloc/proxy_info.dart';
 import 'package:unify/bloc/proxy_list.dart';
-import 'package:unify/bloc/subscription.dart';
 import 'package:unify/pages/main/states/bottombar_state.dart';
 import 'package:unify/pages/proxy_info/proxy_info.dart';
 
 class ProxyListView extends StatefulWidget {
   final BottomBarState _bottomBarState;
   final ProxyListBloc _proxyListBloc;
-  final SubscriptionBloc _subscriptionBloc;
 
-  ProxyListView(
-      this._bottomBarState, this._proxyListBloc, this._subscriptionBloc);
+  ProxyListView(this._bottomBarState, this._proxyListBloc);
 
   @override
   State<StatefulWidget> createState() => _ProxyListViewState();
@@ -19,56 +16,34 @@ class ProxyListView extends StatefulWidget {
 
 class _ProxyListViewState extends State<ProxyListView> {
   @override
-  void initState() {
-    super.initState();
-    widget._subscriptionBloc.subs.listen((data) {
-      if (data == null) return;
-      for (var i in data) {
-        for (var j in i.nodes) {
-          if (i.nodes == null) return;
-          if (j.type == ProxyType.SSR) {
-            widget._proxyListBloc.addSSRServer(j.node);
-          } else if (j.type == ProxyType.V2ray) {
-            widget._proxyListBloc.addV2rayServer(j.node);
-          }
-        }
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       child: widget._bottomBarState.curType == BottomBarStateEnum.V2RAY
-          ? V2RAYProxyListView(
-              widget._bottomBarState, widget._proxyListBloc.v2rayListStream)
-          : SSRProxyListView(
-              widget._bottomBarState, widget._proxyListBloc.ssrListStream),
-      onRefresh: () async {
-        await widget._subscriptionBloc.updateSubs();
-      },
+          ? V2RAYProxyListView(widget._bottomBarState, widget._proxyListBloc)
+          : SSRProxyListView(widget._bottomBarState, widget._proxyListBloc),
+      onRefresh: () async {},
     );
   }
 }
 
 class V2RAYProxyListView extends StatefulWidget {
-  final Stream<List<V2rayInfo>> _stream;
+  final ProxyListBloc _proxyListBloc;
   final BottomBarState _bottomBarState;
 
-  V2RAYProxyListView(this._bottomBarState, this._stream);
+  V2RAYProxyListView(this._bottomBarState, this._proxyListBloc);
 
   @override
   V2RAYProxyListViewState createState() => V2RAYProxyListViewState();
 }
 
 class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
-  List<V2rayInfo> _list;
+  List<Proxy> _list;
 
   @override
   void initState() {
     super.initState();
     if (!mounted) return;
-    widget._stream.listen((list) {
+    widget._proxyListBloc.v2rayListStream.listen((list) {
       setState(() {
         _list = list;
       });
@@ -81,16 +56,27 @@ class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
       itemBuilder: (context, index) {
         if (_list == null || index >= _list.length) return null;
         final item = _list[index];
+        final V2rayInfo node = item.node;
 
         return ListTile(
-          title: Text(item.ps),
-          subtitle: Text("${item.add}:${item.port}"),
+          title: Text(node.ps),
+          subtitle: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Sub: ${item.sub}"),
+              Text("Addr: ${node.add}:${node.port}"),
+            ],
+          ),
+          selected: item.selected,
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => ProxyInfoPage(widget._bottomBarState, null),
-              ),
-            );
+//            Navigator.of(context).push(
+//              MaterialPageRoute(
+//                builder: (_) => ProxyInfoPage(widget._bottomBarState, null),
+//              ),
+//            );
+            widget._proxyListBloc.unselectAllV2ray();
+            widget._proxyListBloc.selectV2ray(index);
           },
         );
       },
@@ -99,10 +85,10 @@ class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
 }
 
 class SSRProxyListView extends StatefulWidget {
-  final Stream<List<SSRInfo>> _stream;
+  final ProxyListBloc _proxyListBloc;
   final BottomBarState _bottomBarState;
 
-  SSRProxyListView(this._bottomBarState, this._stream);
+  SSRProxyListView(this._bottomBarState, this._proxyListBloc);
 
   @override
   _SSRProxyListViewState createState() => _SSRProxyListViewState();

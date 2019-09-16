@@ -33,6 +33,7 @@ class MainPage extends StatelessWidget {
       ],
       child: Consumer3<BottomBarState, ProxyListBloc, SubscriptionBloc>(
         builder: (_, bottomBarState, proxyListBloc, subscriptionBloc, __) =>
+            // TODO: remove sub dep in home page
             MaterialApp(
           title: 'Unify APP',
           theme: ThemeData(
@@ -44,7 +45,8 @@ class MainPage extends StatelessWidget {
           routes: {
             ProxyInfoPage.ID: (_) =>
                 ProxyInfoPage(bottomBarState, proxyListBloc),
-            SubscriptionPage.ID: (_) => SubscriptionPage(subscriptionBloc)
+            SubscriptionPage.ID: (_) =>
+                SubscriptionPage(subscriptionBloc, proxyListBloc)
           },
         ),
       ),

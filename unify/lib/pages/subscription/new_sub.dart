@@ -25,14 +25,16 @@ class _NewSubFormState extends State<NewSubForm> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                  width: 50,
-                  child: Text(
-                    "Name: ",
-                  )),
+                width: 50,
+                child: Text(
+                  "Name: ",
+                ),
+              ),
               Expanded(
-                  child: TextField(
-                controller: _newSubNameController,
-              )),
+                child: TextField(
+                  controller: _newSubNameController,
+                ),
+              ),
             ],
           ),
           Row(
@@ -64,16 +66,17 @@ class _NewSubFormState extends State<NewSubForm> {
         ),
         FlatButton(
           child: Text("Add"),
-          onPressed: () {
+          onPressed: () async {
             final name = _newSubNameController.text;
             final url = _newSubUrlController.text;
             var result = false;
 
             if (name == '') {
-              result = widget._subscriptionBloc.addSub(Subscription(url));
+              result = await widget._subscriptionBloc.addSub(Subscription(url));
             } else {
-              result = widget._subscriptionBloc
-                  .addSub(Subscription(url, name: name));
+              result = await widget._subscriptionBloc.addSub(
+                Subscription(url, name: name),
+              );
             }
             if (result) {
               Navigator.of(context).pop();
