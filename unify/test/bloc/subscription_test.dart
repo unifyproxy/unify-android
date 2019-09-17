@@ -14,12 +14,12 @@ void main() {
     assert(sub.url == "hello");
   });
 
-  test("add sub to bloc", () {
+  test("add sub to bloc", () async {
     final sub = Subscription("hello");
     final sub2 = Subscription("https://hello.word/");
     final bloc = SubscriptionBloc();
-    assert(bloc.addSub(sub) == false);
-    assert(bloc.addSub(sub2) == true);
+    assert(await bloc.addSub(sub) == false);
+    assert(await bloc.addSub(sub2) == true);
   });
 
   test("test sub url", () async {

@@ -31,8 +31,12 @@ class _NewSubFormState extends State<NewSubForm> {
                 ),
               ),
               Expanded(
-                child: TextField(
-                  controller: _newSubNameController,
+                // remove Dismissible everything will be ok
+                child: Dismissible(
+                  key: UniqueKey(),
+                  child: TextField(
+                    controller: _newSubNameController,
+                  ),
                 ),
               ),
             ],

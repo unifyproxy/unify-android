@@ -31,7 +31,6 @@ class MainPage extends StatelessWidget {
       ],
       child: Consumer3<BottomBarState, ProxyListBloc, SubscriptionBloc>(
         builder: (_, bottomBarState, proxyListBloc, subscriptionBloc, __) =>
-            // TODO: remove sub dep in home page
             MaterialApp(
           title: 'Unify APP',
           theme: ThemeData(

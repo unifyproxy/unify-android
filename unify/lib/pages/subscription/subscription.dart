@@ -27,20 +27,20 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     final subs = Provider.of<SubscriptionBloc>(context).subs;
 
     if (!mounted) return;
-    setState(() {
-      _nameControllers = List(subs.length);
-      _urlControllers = List(subs.length);
-      _enable = List(subs.length);
-      for (var i = 0; i < subs.length; i++) {
-        final sub = subs[i];
+    // setState(() {
+    _nameControllers = List(subs.length);
+    _urlControllers = List(subs.length);
+    _enable = List(subs.length);
+    for (var i = 0; i < subs.length; i++) {
+      final sub = subs[i];
 
-        _nameControllers[i] = TextEditingController();
-        _nameControllers[i].text = sub.name;
-        _urlControllers[i] = TextEditingController();
-        _urlControllers[i].text = sub.url;
-        _enable[i] = sub.enabled;
-      }
-    });
+      _nameControllers[i] = TextEditingController();
+      _nameControllers[i].text = sub.name;
+      _urlControllers[i] = TextEditingController();
+      _urlControllers[i].text = sub.url;
+      _enable[i] = sub.enabled;
+    }
+    // });
   }
 
   @override
@@ -69,7 +69,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 final subs = Provider.of<SubscriptionBloc>(context).subs;
                 final pList = Provider.of<ProxyListBloc>(context);
                 subs.forEach((sub) {
-                  // TODO add proxy to Proxy_list;
+                  // add proxy to Proxy_list;
                   if (sub.enabled) {
                     for (var node in sub.nodes) {
                       if (node.type == ProxyType.V2ray) {
@@ -85,9 +85,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             child: ListView.builder(
               itemCount: subscriptionBloc.subs.length,
               itemBuilder: (_, index) => buildSubList(
-                _nameControllers[index],
-                _urlControllers[index],
-                _enable[index],
+                index,
                 subscriptionBloc,
               ),
             ),
@@ -97,16 +95,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     });
   }
 
-  bool submit(SubscriptionBloc subscriptionBloc, Subscription sub) {
-    subscriptionBloc.addSub(sub);
-  }
-
   Widget buildSubList(
-    TextEditingController nameController,
-    TextEditingController urlController,
-    bool enable,
+    int index,
     SubscriptionBloc subscriptionBloc,
   ) {
+    TextEditingController nameController = _nameControllers[index];
+    TextEditingController urlController = _urlControllers[index];
+    bool enable = _enable[index];
+
+    // remove Dismissible, everything will be fine!
     return Dismissible(
       key: UniqueKey(),
       onDismissed: (DismissDirection dismissDirection) {

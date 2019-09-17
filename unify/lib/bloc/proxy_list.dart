@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:unify/utils.dart';
 
 import 'proxy_info.dart';

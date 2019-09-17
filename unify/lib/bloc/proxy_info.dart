@@ -111,7 +111,7 @@ class V2rayInfo extends ProxyInfo {
 
   V2rayInfo.fromJson(Map<String, dynamic> json) {
     add = json['add'];
-    aid = json['aid'];
+    aid = json['aid'] is String ? json['aid'] : json['aid'].toString();
     host = json['host'];
     id = json['id'];
     net = json['net'];
@@ -120,7 +120,7 @@ class V2rayInfo extends ProxyInfo {
     ps = json['ps'];
     tls = json['tls'];
     type = json['type'];
-    v = json['v'];
+    v = json['v'] is String ? json['v'] : json['v'].toString();
   }
 
   Map<String, dynamic> toJson() {
