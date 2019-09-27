@@ -9,6 +9,8 @@ secret.json
 .buildlog/
 .history
 .svn/
+.gradle
+.dart_tool
 
 # IntelliJ related
 *.iml

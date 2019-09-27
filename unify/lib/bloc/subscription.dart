@@ -7,16 +7,18 @@ import 'package:unify/utils.dart' as utils;
 import './proxy_info.dart';
 
 class Subscription {
-  final String url;
-  final String name;
+  final String id;
+  String name;
+  String url;
 
-  var enabled = true;
+  bool enabled = true;
 
   List<Proxy> _nodes;
 
   List<Proxy> get nodes => _nodes;
 
-  Subscription(this.url, {this.name = "Untitled"});
+  Subscription(this.url, {this.name = "Untitled"})
+      : id = utils.generateRandomID();
 
   Proxy parseNode(String source) {
     final contents = source.split('/');
@@ -93,8 +95,21 @@ class SubscriptionBloc with ChangeNotifier {
     return false;
   }
 
-  removeSub(Subscription sub) {
-    _subs = _subs.where((s) => s.url != sub.url).toList();
+  void change(String id, {String name, String url}) {
+    for (var i = 0; i < _subs.length; i++) {
+      if (_subs[i].id == id) {
+        if (name != null) {
+          _subs[i].name = name;
+        }
+        if (url != null) {
+          _subs[i].url = url;
+        }
+      }
+    }
+  }
+
+  removeSub(String id) {
+    _subs = _subs.where((s) => s.id != id).toList();
     notifyListeners();
   }
 

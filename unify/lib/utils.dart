@@ -1,5 +1,7 @@
 import 'dart:convert' as convert;
 
+import 'package:uuid/uuid.dart' as uuid;
+
 import 'package:unify/bloc/proxy_info.dart';
 
 String base64Decode(String source) =>
@@ -14,3 +16,5 @@ bool isV2rayIdentical(V2rayInfo a, V2rayInfo b) =>
 
 bool isSSRIdentical(SSRInfo a, SSRInfo b) =>
     a.host == b.host && a.port == b.port;
+
+String generateRandomID() => uuid.Uuid().v4();
