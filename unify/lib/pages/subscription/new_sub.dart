@@ -31,12 +31,8 @@ class _NewSubFormState extends State<NewSubForm> {
                 ),
               ),
               Expanded(
-                // remove Dismissible everything will be ok
-                child: Dismissible(
-                  key: UniqueKey(),
-                  child: TextField(
-                    controller: _newSubNameController,
-                  ),
+                child: TextField(
+                  controller: _newSubNameController,
                 ),
               ),
             ],
@@ -46,9 +42,10 @@ class _NewSubFormState extends State<NewSubForm> {
             children: <Widget>[
               SizedBox(width: 50, child: Text("Url: ")),
               Expanded(
-                  child: TextField(
-                controller: _newSubUrlController,
-              )),
+                child: TextField(
+                  controller: _newSubUrlController,
+                ),
+              ),
             ],
           ),
           Text(

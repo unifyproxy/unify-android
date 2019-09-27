@@ -102,69 +102,64 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     TextEditingController nameController = _nameControllers[index];
     TextEditingController urlController = _urlControllers[index];
     bool enable = _enable[index];
+    final id = subscriptionBloc.subs[index].id;
 
-    // remove Dismissible, everything will be fine!
     return Dismissible(
-      key: UniqueKey(),
+      key: ValueKey(subscriptionBloc.subs[index].id),
       onDismissed: (DismissDirection dismissDirection) {
-        subscriptionBloc.removeSub(
-            Subscription(urlController.text, name: nameController.text));
+        subscriptionBloc.removeSub(id);
       },
-      child: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  SizedBox(width: 50, child: Text("Name: ")),
-                  Expanded(
-                    child: TextField(
-                      controller: nameController,
+      child: Builder(
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(width: 50, child: Text("Name: ")),
+                    Expanded(
+                      child: TextField(
+                        controller: nameController,
+                      ),
                     ),
-                  ),
-                  Checkbox(
-                    value: enable,
-                    onChanged: (bool checked) {
-                      setState(() {
-                        enable = checked;
-                      });
-                    },
-                  )
-                ],
+                    Checkbox(
+                      value: enable,
+                      onChanged: (bool checked) {
+                        setState(() {
+                          enable = checked;
+                        });
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  SizedBox(width: 50, child: Text("URL: ")),
-                  Expanded(
-                    child: TextField(
-                      controller: urlController,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    SizedBox(width: 50, child: Text("URL: ")),
+                    Expanded(
+                      child: TextField(
+                        controller: urlController,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.save),
-                    onPressed: () async {
-                      if (await subscriptionBloc.addSub(
-                        Subscription(
-                          urlController.text,
+                    IconButton(
+                      icon: Icon(Icons.save),
+                      onPressed: () {
+                        subscriptionBloc.change(
+                          id,
                           name: nameController.text,
-                        ),
-                      )) {
-                        // reset();
-                        return;
-                      }
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(content: Text("invalid sub url")));
-                    },
-                  ),
-                ],
+                          url: urlController.text,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
