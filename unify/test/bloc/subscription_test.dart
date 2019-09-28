@@ -43,6 +43,6 @@ void main() {
     final secret = jsonDecode(File("./secret.json").readAsStringSync());
     final sub = Subscription(secret['ssr_sub']);
 
-    assert(await sub.update());
+    assert((await sub.update()).length != 0);
   });
 }

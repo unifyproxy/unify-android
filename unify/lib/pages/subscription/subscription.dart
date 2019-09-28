@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import 'package:unify/bloc/proxy_info.dart';
 import 'package:unify/bloc/subscription.dart';
 import 'package:unify/bloc/proxy_list.dart';
 import 'package:unify/global.dart';
@@ -75,16 +74,20 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             onRefresh: () async {
               await subscriptionBloc.updateSubs();
               return Future(() {
-                final subs = Provider.of<SubscriptionBloc>(context).subs;
+                final subs = Provider.of<SubscriptionBloc>(context);
                 final pList = Provider.of<ProxyListBloc>(context);
-                subs.forEach((sub) {
-                  // add proxy to Proxy_list;
-                  if (sub.enabled) {
-                    for (var node in sub.nodes) {
-                      pList.addProxy(node);
-                    }
-                  }
-                });
+
+                subs
+                    .updateSubs()
+                    .then((_pList) => _pList.forEach((p) => pList.addProxy(p)));
+                // subs.forEach((sub) {
+                //   // add proxy to Proxy_list;
+                //   if (sub.enabled) {
+                //     for (var node in sub.nodes) {
+                //       pList.addProxy(node);
+                //     }
+                //   }
+                // });
               });
             },
             child: ListView.builder(

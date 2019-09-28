@@ -13,10 +13,6 @@ class Subscription {
 
   bool enabled = true;
 
-  List<Proxy> _nodes;
-
-  List<Proxy> get nodes => _nodes;
-
   Subscription(this.url, {this.name = "Untitled"})
       : id = utils.generateRandomID();
 
@@ -47,7 +43,7 @@ class Subscription {
     }
   }
 
-  Future<bool> update() async {
+  Future<List<Proxy>> update() async {
     final res = await http.get(url);
     if (res.statusCode == 200) {
       final List<Proxy> nodes = [];
@@ -57,10 +53,9 @@ class Subscription {
         nodes.add(parseNode(url));
       }
 
-      _nodes = nodes;
-      return true;
+      return nodes;
     }
-    return false;
+    return List();
   }
 }
 
@@ -80,10 +75,7 @@ class SubscriptionBloc with ChangeNotifier {
       }
       _subs.add(sub);
 
-      // update automatically
-      final ret = await sub.update();
-      if (ret) notifyListeners();
-      return ret;
+      return true;
     }
     return false;
   }
@@ -121,10 +113,12 @@ class SubscriptionBloc with ChangeNotifier {
     return res.statusCode == 200;
   }
 
-  updateSubs() async {
+  Future<List<Proxy>> updateSubs() async {
+    final list = List();
     for (var sub in _subs) {
-      await sub.update();
+      list.addAll(await sub.update());
     }
-    notifyListeners();
+
+    return list;
   }
 }
