@@ -11,10 +11,6 @@ class ProxyList {
 class ProxyListBloc with ChangeNotifier {
   final ProxyList _proxyList = ProxyList();
 
-  ProxyListBloc() {
-    // TODO: implement it
-  }
-
   List<Proxy> getProxyListByType(ProxyType type) {
     switch (type) {
       case ProxyType.V2ray:
@@ -30,10 +26,36 @@ class ProxyListBloc with ChangeNotifier {
     return List();
   }
 
-  addSSRServer(SSRInfo ssrInfo, {sub = "None"}) {
-    if (_proxyList._ssrList.any((it) => isSSRIdentical(it.node, ssrInfo)))
+  changeSubName(String id, String newName) {
+    for (var i = 0; i < _proxyList._ssrList.length; i++) {
+      if (_proxyList._ssrList[i].subID == id) {
+        _proxyList._ssrList[i].sub = newName;
+      }
+    }
+
+    for (var i = 0; i < _proxyList._v2rayList.length; i++) {
+      if (_proxyList._v2rayList[i].subID == id) {
+        _proxyList._v2rayList[i].sub = newName;
+      }
+    }
+  }
+
+  addProxy(Proxy proxy) {
+    switch (proxy.type) {
+      case ProxyType.V2ray:
+        addV2rayServer(proxy);
+        break;
+      case ProxyType.SSR:
+        addSSRServer(proxy);
+        break;
+      default:
+    }
+  }
+
+  addSSRServer(Proxy proxy) {
+    if (_proxyList._ssrList.any((it) => isSSRIdentical(it.node, proxy.node)))
       return;
-    _proxyList._ssrList.add(Proxy(ProxyType.SSR, ssrInfo, sub: sub));
+    _proxyList._ssrList.add(proxy);
     notifyListeners();
   }
 
@@ -42,12 +64,12 @@ class ProxyListBloc with ChangeNotifier {
     notifyListeners();
   }
 
-  addV2rayServer(V2rayInfo v2rayInfo, {sub = "None"}) {
+  addV2rayServer(Proxy proxy) {
     if (_proxyList._v2rayList
-        .any((it) => isV2rayIdentical(it.node, v2rayInfo))) {
+        .any((it) => isV2rayIdentical(it.node, proxy.node))) {
       return;
     }
-    _proxyList._v2rayList.add(Proxy(ProxyType.V2ray, v2rayInfo, sub: sub));
+    _proxyList._v2rayList.add(proxy);
     notifyListeners();
   }
 

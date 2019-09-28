@@ -3,13 +3,14 @@ import 'package:unify/utils.dart' as utils;
 enum ProxyType { V2ray, SSR, Unsupported }
 
 class Proxy<T extends ProxyInfo> {
+  final String subID;
   final ProxyType type;
-  final String sub;
-  final T node;
+  String sub;
+  T node;
 
   bool selected = false;
 
-  Proxy(this.type, this.node, {this.sub = "None"});
+  Proxy(this.type, this.node, this.subID, {this.sub = "None"});
 }
 
 abstract class ProxyInfo {}

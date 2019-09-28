@@ -55,11 +55,11 @@ class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
             ),
             selected: item.selected,
             onTap: () {
-//            Navigator.of(context).push(
-//              MaterialPageRoute(
-//                builder: (_) => ProxyInfoPage(widget._bottomBarState, null),
-//              ),
-//            );
+              //  Navigator.of(context).push(
+              //    MaterialPageRoute(
+              //      builder: (_) => ProxyInfoPage(widget._bottomBarState, null),
+              //    ),
+              //  );
               proxyListBloc.unselectAllV2ray();
               proxyListBloc.selectV2ray(index);
             },

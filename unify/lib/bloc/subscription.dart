@@ -30,6 +30,7 @@ class Subscription {
       return Proxy<V2rayInfo>(
         ProxyType.V2ray,
         V2rayInfo.fromJson(jsonDecode(contentString)),
+        id,
         sub: name,
       );
     } else if (protocol == 'ssr:') {
@@ -37,11 +38,12 @@ class Subscription {
       return Proxy<SSRInfo>(
         ProxyType.SSR,
         SSRInfo.fromRawString(contentString),
+        id,
         sub: name,
       );
     } else {
       // nodeType = NodeType.Unsupported;
-      return Proxy(ProxyType.Unsupported, null);
+      return Proxy(ProxyType.Unsupported, null, id);
     }
   }
 
@@ -104,6 +106,7 @@ class SubscriptionBloc with ChangeNotifier {
         if (url != null) {
           _subs[i].url = url;
         }
+        notifyListeners();
       }
     }
   }

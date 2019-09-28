@@ -25,22 +25,31 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     super.didChangeDependencies();
 
     final subs = Provider.of<SubscriptionBloc>(context).subs;
+    // final proxys = Provider.of<ProxyListBloc>(context);
 
     if (!mounted) return;
-    // setState(() {
-    _nameControllers = List(subs.length);
-    _urlControllers = List(subs.length);
-    _enable = List(subs.length);
-    for (var i = 0; i < subs.length; i++) {
-      final sub = subs[i];
+    setState(() {
+      _nameControllers = List(subs.length);
+      _urlControllers = List(subs.length);
+      _enable = List(subs.length);
+      for (var i = 0; i < subs.length; i++) {
+        final sub = subs[i];
 
-      _nameControllers[i] = TextEditingController();
-      _nameControllers[i].text = sub.name;
-      _urlControllers[i] = TextEditingController();
-      _urlControllers[i].text = sub.url;
-      _enable[i] = sub.enabled;
-    }
-    // });
+        _nameControllers[i] = TextEditingController();
+        _nameControllers[i].text = sub.name;
+        _urlControllers[i] = TextEditingController();
+        _urlControllers[i].text = sub.url;
+        _enable[i] = sub.enabled;
+
+        // for (var node in sub.nodes) {
+        //   if (node.type == ProxyType.SSR) {
+        //     proxys.addSSRServer(node.node);
+        //   } else if (node.type == ProxyType.V2ray) {
+        //     proxys.addV2rayServer(node.node);
+        //   }
+        // }
+      }
+    });
   }
 
   @override
@@ -72,11 +81,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   // add proxy to Proxy_list;
                   if (sub.enabled) {
                     for (var node in sub.nodes) {
-                      if (node.type == ProxyType.V2ray) {
-                        pList.addV2rayServer(node.node, sub: node.sub);
-                      } else if (node.type == ProxyType.SSR) {
-                        pList.addSSRServer(node.node, sub: node.sub);
-                      }
+                      pList.addProxy(node);
                     }
                   }
                 });
@@ -153,6 +158,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                           name: nameController.text,
                           url: urlController.text,
                         );
+
+                        final pList = Provider.of<ProxyListBloc>(context);
+                        pList.changeSubName(id, nameController.text);
                       },
                     ),
                   ],
