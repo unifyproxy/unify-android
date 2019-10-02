@@ -20,6 +20,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   List<bool> _enable = List();
 
   @override
+  void initState() {
+    super.initState();
+
+    Future(() {
+      final subs = Provider.of<SubscriptionBloc>(context);
+      subs.load();
+    });
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -53,7 +63,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SubscriptionBloc>(builder: (context, subscriptionBloc, _) {
+    return Consumer2<SubscriptionBloc, ProxyListBloc>(
+        builder: (context, subscriptionBloc, proxyListBloc, _) {
       return Scaffold(
         appBar: AppBar(
           title: Text(APP_NAME),
@@ -74,8 +85,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             onRefresh: () async {
               await subscriptionBloc.updateSubs();
               return Future(() {
-                final subs = Provider.of<SubscriptionBloc>(context);
-                final pList = Provider.of<ProxyListBloc>(context);
+                final subs = subscriptionBloc;
+                final pList = proxyListBloc;
 
                 subs
                     .updateSubs()

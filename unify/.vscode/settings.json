@@ -9,5 +9,16 @@
         "--enable-completion-model"
     ],
     "editor.suggestSelection": "first",
-    "dart.flutterAndroidX": true
+    "dart.flutterAndroidX": true,
+    "vim.insertModeKeyBindings": [
+        {
+            "before": [
+                "i",
+                "i"
+            ],
+            "after": [
+                "Esc"
+            ]
+        }
+    ]
 }

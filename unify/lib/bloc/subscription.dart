@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:unify/global.dart';
 import 'package:unify/utils.dart' as utils;
 
 import './proxy_info.dart';
@@ -15,6 +17,18 @@ class Subscription {
 
   Subscription(this.url, {this.name = "Untitled"})
       : id = utils.generateRandomID();
+
+  Subscription.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        url = json['url'],
+        enabled = json['enabled'];
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'url': url,
+        'enabled': enabled,
+      };
 
   Proxy parseNode(String source) {
     final contents = source.split('/');
@@ -74,7 +88,8 @@ class SubscriptionBloc with ChangeNotifier {
         return false;
       }
       _subs.add(sub);
-
+      store();
+      notifyListeners();
       return true;
     }
     return false;
@@ -98,6 +113,7 @@ class SubscriptionBloc with ChangeNotifier {
         if (url != null) {
           _subs[i].url = url;
         }
+        store();
         notifyListeners();
       }
     }
@@ -105,6 +121,7 @@ class SubscriptionBloc with ChangeNotifier {
 
   removeSub(String id) {
     _subs = _subs.where((s) => s.id != id).toList();
+    store();
     notifyListeners();
   }
 
@@ -114,11 +131,25 @@ class SubscriptionBloc with ChangeNotifier {
   }
 
   Future<List<Proxy>> updateSubs() async {
-    final list = List();
+    final list = List<Proxy>();
     for (var sub in _subs) {
       list.addAll(await sub.update());
     }
 
     return list;
+  }
+
+  store() async {
+    utils.store<Subscription>(_subs, await getSubPath());
+  }
+
+  load() async {
+    final f = File(await getSubPath());
+    final s = jsonDecode(f.readAsStringSync()) as List<dynamic>;
+    if (s != null) {
+      _subs = s.map((s) => Subscription.fromJson(s)).toList();
+    } else {
+      _subs = List();
+    }
   }
 }
