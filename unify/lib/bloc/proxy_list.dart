@@ -93,7 +93,7 @@ class ProxyListBloc with ChangeNotifier {
 
   selectSSR(int index) {
     if (index >= 0 && index < _proxyList._v2rayList.length) {
-      _proxyList._v2rayList[index].selected = true;
+      _proxyList._ssrList[index].selected = true;
       notifyListeners();
     }
   }

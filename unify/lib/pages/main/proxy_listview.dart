@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:unify/bloc/proxy_info.dart';
 import 'package:unify/bloc/proxy_list.dart';
 import 'package:unify/pages/main/states/bottombar_state.dart';
-import 'package:unify/pages/proxy_info/proxy_info.dart';
 
 class ProxyListView extends StatefulWidget {
   final BottomBarState _bottomBarState;
@@ -83,18 +82,32 @@ class SSRProxyListView extends StatefulWidget {
 class _SSRProxyListViewState extends State<SSRProxyListView> {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 50,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text("ssr $index"),
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    ProxyInfoPage(widget._bottomBarState, null)));
-          },
-        );
-      },
+    return Consumer<ProxyListBloc>(
+      builder: (context, proxyListbloc, _) => ListView.builder(
+        itemBuilder: (context, index) {
+          final proxys = proxyListbloc.getProxyListByType(ProxyType.SSR);
+          if (proxys == null || index >= proxys.length) return null;
+          final proxy = proxys[index];
+          final ssr = proxy.node as SSRInfo;
+
+          return ListTile(
+            title: Text("${ssr.remark}"),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text("Host: ${ssr.host}:${ssr.port}"),
+                Text("Sub: ${proxy.sub}"),
+              ],
+            ),
+            selected: proxy.selected,
+            onTap: () {
+              proxyListbloc.unselectAllSSR();
+              proxyListbloc.selectSSR(index);
+            },
+          );
+        },
+      ),
     );
   }
 }
