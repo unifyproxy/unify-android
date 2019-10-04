@@ -16,10 +16,16 @@ import android.os.Build
 import android.os.Environment
 import java.nio.charset.Charset
 
+import libmv2ray.Libmv2ray_;
+
 class MainActivity : FlutterActivity() {
 
     val TUN2SOCKS_PATH by lazy {
        "${dataDir.absolutePath}/tun2socks"
+    }
+
+    val v2ray by lazy {
+        Libmv2ray_()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +40,8 @@ class MainActivity : FlutterActivity() {
         } catch (e: Exception) {
             Log.e("eeeeeee", e.toString())
         }
+
+        v2ray.init(dataDir.absolutePath)
 
         Log.e("files dir", dataDir.absolutePath)
     }

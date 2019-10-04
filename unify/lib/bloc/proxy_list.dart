@@ -26,6 +26,21 @@ class ProxyListBloc with ChangeNotifier {
     return List();
   }
 
+  Proxy getCurrenitProxyByType(ProxyType type) {
+    switch (type) {
+      case ProxyType.V2ray:
+        return _proxyList._v2rayList.where((v) => v.selected).toList()[0];
+        break;
+      case ProxyType.SSR:
+        return _proxyList._ssrList.where((v) => v.selected).toList()[0];
+        break;
+      case ProxyType.Unsupported:
+        return null;
+        break;
+    }
+    return null;
+  }
+
   changeSubName(String id, String newName) {
     for (var i = 0; i < _proxyList._ssrList.length; i++) {
       if (_proxyList._ssrList[i].subID == id) {

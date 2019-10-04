@@ -108,6 +108,7 @@ flutter {
 }
 
 dependencies {
+    implementation project(':libmv2ray')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

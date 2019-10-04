@@ -61,6 +61,7 @@ class V2RAYProxyListViewState extends State<V2RAYProxyListView> {
               //  );
               proxyListBloc.unselectAllV2ray();
               proxyListBloc.selectV2ray(index);
+              print(proxyListBloc.getCurrenitProxyByType(ProxyType.V2ray));
             },
           );
         },
@@ -104,6 +105,7 @@ class _SSRProxyListViewState extends State<SSRProxyListView> {
             onTap: () {
               proxyListbloc.unselectAllSSR();
               proxyListbloc.selectSSR(index);
+              print(proxyListbloc.getCurrenitProxyByType(ProxyType.SSR));
             },
           );
         },
